@@ -7,7 +7,7 @@ const { registerHelpers } = require('./middleware/helpers');
 const { authenticate } = require('./middleware/auth');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3015;
 
 // Initialize database
 getDb();
