@@ -4,8 +4,9 @@
         <p>Manage bird types, stock levels, and transactions</p>
     </div>
     <div class="page-header-actions">
-        <button class="btn btn-outline" data-modal="modalAddBirdType">+ Add Bird Type</button>
-        <button class="btn btn-primary" data-modal="modalBirdTransaction">+ Record Transaction</button>
+        {{#canDo 'birds' 'create'}}<button class="btn btn-outline" data-modal="modalAddBirdType">+ Add Bird
+            Type</button>
+        <button class="btn btn-primary" data-modal="modalBirdTransaction">+ Record Transaction</button>{{/canDo}}
     </div>
 </div>
 
@@ -56,11 +57,12 @@
                                 {{/if}}
                             </td>
                             <td>
-                                <form action="/birds/type/{{this.id}}/toggle" method="POST" style="display:inline">
+                                {{#canDo 'birds' 'edit'}}<form action="/birds/type/{{this.id}}/toggle" method="POST"
+                                    style="display:inline">
                                     <button type="submit" class="btn btn-ghost btn-sm">
                                         {{#if this.is_active}}Deactivate{{else}}Activate{{/if}}
                                     </button>
-                                </form>
+                                </form>{{/canDo}}
                             </td>
                         </tr>
                         {{/each}}
@@ -84,6 +86,7 @@
         </div>
         <div class="card-body">
             <div class="quick-entry-grid" style="grid-template-columns: 1fr;">
+                {{#canDo 'birds' 'create'}}
                 <button class="quick-entry-btn" data-modal="modalBirdPurchase">
                     <div class="qe-icon" style="background: var(--info-light); color: var(--info);">🛒</div>
                     <div class="qe-text">
@@ -105,6 +108,11 @@
                         <p>Log bird deaths</p>
                     </div>
                 </button>
+                {{else}}
+                <div class="empty-state">
+                    <p class="text-muted">You don't have permission to create transactions</p>
+                </div>
+                {{/canDo}}
             </div>
         </div>
     </div>
@@ -159,6 +167,7 @@
 </div>
 
 <!-- Add Bird Type Modal -->
+{{#canDo 'birds' 'create'}}
 <div class="modal-overlay" id="modalAddBirdType">
     <div class="modal">
         <div class="modal-header">
@@ -184,7 +193,6 @@
     </div>
 </div>
 
-<!-- Bird Transaction Modal (Generic) -->
 <div class="modal-overlay" id="modalBirdTransaction">
     <div class="modal">
         <div class="modal-header">
@@ -262,7 +270,6 @@
     </div>
 </div>
 
-<!-- Bird Purchase Modal -->
 <div class="modal-overlay" id="modalBirdPurchase">
     <div class="modal">
         <div class="modal-header">
@@ -398,3 +405,4 @@
         </form>
     </div>
 </div>
+{{/canDo}}

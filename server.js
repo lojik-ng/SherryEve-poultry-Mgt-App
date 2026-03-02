@@ -33,14 +33,14 @@ app.use((req, res, next) => {
         const settingsRows = db.prepare('SELECT key, value FROM system_settings').all();
         const settings = {};
         settingsRows.forEach(s => settings[s.key] = s.value);
-        res.locals.farmName = settings.farm_name || 'nuPoultry Farm';
+        res.locals.farmName = settings.farm_name || 'SherryEve Farm';
         res.locals.currency = settings.currency || '₦';
         // Only set if not already set by authenticate middleware later
         if (!res.locals.settings) {
             res.locals.settings = settings;
         }
     } catch (e) {
-        res.locals.farmName = 'nuPoultry Farm';
+        res.locals.farmName = 'SherryEve Farm';
         res.locals.currency = '₦';
     }
     next();

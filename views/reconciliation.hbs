@@ -3,8 +3,9 @@
         <h2>📋 Stock Reconciliation</h2>
         <p>Physical stock audit and adjustment</p>
     </div>
-    <div class="page-header-actions"><button class="btn btn-primary" data-modal="modalReconcile">+ New
-            Reconciliation</button></div>
+    <div class="page-header-actions">{{#canDo 'reconciliation' 'create'}}<button class="btn btn-primary"
+            data-modal="modalReconcile">+ New
+            Reconciliation</button>{{/canDo}}</div>
 </div>
 
 <!-- Current Stock Levels -->
@@ -90,6 +91,7 @@
     </div>
 </div>
 
+{{#canDo 'reconciliation' 'create'}}
 <div class="modal-overlay" id="modalReconcile">
     <div class="modal">
         <div class="modal-header">
@@ -134,6 +136,7 @@
         </form>
     </div>
 </div>
+{{/canDo}}
 
 <script>
     function toggleReconcileSubType() {

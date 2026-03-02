@@ -3,7 +3,8 @@
         <h2>📝 Farm Journal</h2>
         <p>Daily farm notes, observations, and records</p>
     </div>
-    <div class="page-header-actions"><button class="btn btn-primary" data-modal="modalAddNote">+ New Note</button></div>
+    <div class="page-header-actions">{{#canDo 'notes' 'create'}}<button class="btn btn-primary"
+            data-modal="modalAddNote">+ New Note</button>{{/canDo}}</div>
 </div>
 
 <div class="filters-bar">
@@ -32,10 +33,12 @@
                 <div class="flex items-center gap-1">
                     <span class="text-muted" style="font-size: 0.8rem;">{{formatDate this.note_date}} ·
                         {{this.created_by_name}}</span>
+                    {{#canDo 'notes' 'delete'}}
                     <form action="/notes/{{this.id}}/delete" method="POST" style="display:inline">
                         <button type="submit" class="btn btn-ghost btn-sm text-danger"
                             data-confirm="Delete this note?">🗑</button>
                     </form>
+                    {{/canDo}}
                 </div>
             </div>
             <p style="font-size: 0.9rem; color: var(--text-secondary); white-space: pre-wrap;">{{this.content}}</p>
@@ -51,6 +54,7 @@
     </div>
 </div>
 
+{{#canDo 'notes' 'create'}}
 <div class="modal-overlay" id="modalAddNote">
     <div class="modal">
         <div class="modal-header">
@@ -84,3 +88,4 @@
         </form>
     </div>
 </div>
+{{/canDo}}

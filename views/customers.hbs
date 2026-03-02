@@ -3,8 +3,9 @@
         <h2>🛒 Customer Management</h2>
         <p>Manage your buyers and their orders</p>
     </div>
-    <div class="page-header-actions"><button class="btn btn-primary" data-modal="modalAddCustomer">+ Add
-            Customer</button></div>
+    <div class="page-header-actions">{{#canDo 'customers' 'create'}}<button class="btn btn-primary"
+            data-modal="modalAddCustomer">+ Add
+            Customer</button>{{/canDo}}</div>
 </div>
 
 <div class="card">
@@ -31,10 +32,12 @@
                         <td>{{#if this.address}}{{truncate this.address 30}}{{else}}—{{/if}}</td>
                         <td>{{formatDate this.created_at}}</td>
                         <td class="table-actions">
+                            {{#canDo 'customers' 'delete'}}
                             <form action="/customers/{{this.id}}/delete" method="POST" style="display:inline">
                                 <button type="submit" class="btn btn-ghost btn-sm text-danger"
                                     data-confirm="Delete this customer?">🗑</button>
                             </form>
+                            {{/canDo}}
                         </td>
                     </tr>
                     {{/each}}
@@ -51,6 +54,7 @@
     </div>
 </div>
 
+{{#canDo 'customers' 'create'}}
 <div class="modal-overlay" id="modalAddCustomer">
     <div class="modal">
         <div class="modal-header">
@@ -77,3 +81,4 @@
         </form>
     </div>
 </div>
+{{/canDo}}

@@ -14,58 +14,59 @@
 
         <div class="nav-section">
             <div class="nav-section-title">Inventory</div>
-            <a href="/birds" class="nav-item {{activeNav activeNav 'birds'}}">
+            {{#canDo 'birds' 'view'}}<a href="/birds" class="nav-item {{activeNav activeNav 'birds'}}">
                 <span class="nav-icon">🐔</span> Birds
-            </a>
-            <a href="/eggs" class="nav-item {{activeNav activeNav 'eggs'}}">
+            </a>{{/canDo}}
+            {{#canDo 'eggs' 'view'}}<a href="/eggs" class="nav-item {{activeNav activeNav 'eggs'}}">
                 <span class="nav-icon">🥚</span> Eggs
-            </a>
-            <a href="/feed" class="nav-item {{activeNav activeNav 'feed'}}">
+            </a>{{/canDo}}
+            {{#canDo 'feed' 'view'}}<a href="/feed" class="nav-item {{activeNav activeNav 'feed'}}">
                 <span class="nav-icon">🌾</span> Feed
-            </a>
+            </a>{{/canDo}}
         </div>
 
         <div class="nav-section">
             <div class="nav-section-title">Business</div>
-            <a href="/orders" class="nav-item {{activeNav activeNav 'orders'}}">
+            {{#canDo 'orders' 'view'}}<a href="/orders" class="nav-item {{activeNav activeNav 'orders'}}">
                 <span class="nav-icon">📦</span> Egg Orders
                 {{#if pendingOrders}}<span class="nav-badge">{{pendingOrders}}</span>{{/if}}
-            </a>
-            <a href="/finance" class="nav-item {{activeNav activeNav 'finance'}}">
+            </a>{{/canDo}}
+            {{#canDo 'finance' 'view'}}<a href="/finance" class="nav-item {{activeNav activeNav 'finance'}}">
                 <span class="nav-icon">💰</span> Finance
-            </a>
-            <a href="/vendors" class="nav-item {{activeNav activeNav 'vendors'}}">
+            </a>{{/canDo}}
+            {{#canDo 'vendors' 'view'}}<a href="/vendors" class="nav-item {{activeNav activeNav 'vendors'}}">
                 <span class="nav-icon">🏪</span> Vendors
-            </a>
-            <a href="/customers" class="nav-item {{activeNav activeNav 'customers'}}">
+            </a>{{/canDo}}
+            {{#canDo 'customers' 'view'}}<a href="/customers" class="nav-item {{activeNav activeNav 'customers'}}">
                 <span class="nav-icon">🛒</span> Customers
-            </a>
+            </a>{{/canDo}}
         </div>
 
         <div class="nav-section">
             <div class="nav-section-title">Operations</div>
-            <a href="/notes" class="nav-item {{activeNav activeNav 'notes'}}">
+            {{#canDo 'notes' 'view'}}<a href="/notes" class="nav-item {{activeNav activeNav 'notes'}}">
                 <span class="nav-icon">📝</span> Farm Journal
-            </a>
-            <a href="/reconciliation" class="nav-item {{activeNav activeNav 'reconciliation'}}">
+            </a>{{/canDo}}
+            {{#canDo 'reconciliation' 'view'}}<a href="/reconciliation"
+                class="nav-item {{activeNav activeNav 'reconciliation'}}">
                 <span class="nav-icon">📋</span> Reconciliation
-            </a>
-            <a href="/reports" class="nav-item {{activeNav activeNav 'reports'}}">
+            </a>{{/canDo}}
+            {{#canDo 'reports' 'view'}}<a href="/reports" class="nav-item {{activeNav activeNav 'reports'}}">
                 <span class="nav-icon">📈</span> Reports
-            </a>
+            </a>{{/canDo}}
         </div>
 
         <div class="nav-section">
             <div class="nav-section-title">Administration</div>
-            <a href="/admin" class="nav-item {{activeNav activeNav 'admin'}}">
+            {{#canDo 'admin' 'view'}}<a href="/admin" class="nav-item {{activeNav activeNav 'admin'}}">
                 <span class="nav-icon">👥</span> Users & Roles
-            </a>
-            <a href="/settings" class="nav-item {{activeNav activeNav 'settings'}}">
+            </a>{{/canDo}}
+            {{#canDo 'settings' 'view'}}<a href="/settings" class="nav-item {{activeNav activeNav 'settings'}}">
                 <span class="nav-icon">⚙️</span> Settings
-            </a>
-            <a href="/backup" class="nav-item {{activeNav activeNav 'backup'}}">
+            </a>{{/canDo}}
+            {{#canDo 'backup' 'view'}}<a href="/backup" class="nav-item {{activeNav activeNav 'backup'}}">
                 <span class="nav-icon">💾</span> Backup
-            </a>
+            </a>{{/canDo}}
         </div>
     </nav>
 

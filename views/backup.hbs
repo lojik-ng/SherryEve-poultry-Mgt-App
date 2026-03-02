@@ -4,10 +4,12 @@
         <p>Database backup management</p>
     </div>
     <div class="page-header-actions">
+        {{#canDo 'backup' 'create'}}
         <form action="/backup/create" method="POST" style="display:inline">
             <button type="submit" class="btn btn-primary" data-confirm="Create a new backup now?">💾 Create Backup
                 Now</button>
         </form>
+        {{/canDo}}
     </div>
 </div>
 

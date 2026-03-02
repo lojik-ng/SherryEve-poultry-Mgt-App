@@ -4,8 +4,10 @@
         <p>Track income, expenses, and profitability</p>
     </div>
     <div class="page-header-actions">
+        {{#canDo 'finance' 'create'}}
         <button class="btn btn-success" data-modal="modalAddIncome">+ Add Income</button>
         <button class="btn btn-danger" data-modal="modalAddExpense">+ Add Expense</button>
+        {{/canDo}}
     </div>
 </div>
 
@@ -154,6 +156,7 @@
 </div>
 
 <!-- Add Income Modal -->
+{{#canDo 'finance' 'create'}}
 <div class="modal-overlay" id="modalAddIncome">
     <div class="modal">
         <div class="modal-header">
@@ -214,3 +217,4 @@
         </form>
     </div>
 </div>
+{{/canDo}}

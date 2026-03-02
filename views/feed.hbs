@@ -4,9 +4,11 @@
         <p>Manage feed types, stock, and usage tracking</p>
     </div>
     <div class="page-header-actions">
+        {{#canDo 'feed' 'create'}}
         <button class="btn btn-outline" data-modal="modalAddFeedType">+ Add Feed Type</button>
         <button class="btn btn-primary" data-modal="modalFeedPurchase">+ Purchase</button>
         <button class="btn btn-warning" data-modal="modalFeedConsume">+ Consumption</button>
+        {{/canDo}}
     </div>
 </div>
 
@@ -50,10 +52,12 @@
                             <td>{{#if this.is_active}}<span class="badge badge-success">Active</span>{{else}}<span
                                     class="badge badge-danger">Inactive</span>{{/if}}</td>
                             <td>
+                                {{#canDo 'feed' 'edit'}}
                                 <form action="/feed/type/{{this.id}}/toggle" method="POST" style="display:inline">
                                     <button type="submit" class="btn btn-ghost btn-sm">{{#if
                                         this.is_active}}Deactivate{{else}}Activate{{/if}}</button>
                                 </form>
+                                {{/canDo}}
                             </td>
                         </tr>
                         {{/each}}
@@ -76,6 +80,7 @@
         </div>
         <div class="card-body">
             <div class="quick-entry-grid" style="grid-template-columns: 1fr;">
+                {{#canDo 'feed' 'create'}}
                 <button class="quick-entry-btn" data-modal="modalFeedPurchase">
                     <div class="qe-icon" style="background: var(--info-light); color: var(--info);">🛒</div>
                     <div class="qe-text">
@@ -97,6 +102,11 @@
                         <p>Record feed waste/spoilage</p>
                     </div>
                 </button>
+                {{else}}
+                <div class="empty-state">
+                    <p class="text-muted">You don't have permission to create transactions</p>
+                </div>
+                {{/canDo}}
             </div>
         </div>
     </div>
@@ -149,6 +159,7 @@
 </div>
 
 <!-- Add Feed Type Modal -->
+{{#canDo 'feed' 'create'}}
 <div class="modal-overlay" id="modalAddFeedType">
     <div class="modal">
         <div class="modal-header">
@@ -258,3 +269,4 @@
         </form>
     </div>
 </div>
+{{/canDo}}

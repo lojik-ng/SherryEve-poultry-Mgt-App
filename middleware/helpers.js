@@ -111,6 +111,36 @@ function registerHelpers() {
         if (!str) return '?';
         return String(str).charAt(0).toUpperCase();
     });
+
+    // ─── Permission-based UI helper ──────────────────────────────
+    // Uses same normalization as authorize() middleware
+    const MODULE_MAP = {
+        'finance': 'finances',
+        'orders': 'egg_orders',
+        'admin': 'users',
+    };
+    const ACTION_MAP = {
+        'view': 'read',
+        'edit': 'update',
+    };
+
+    hbs.registerHelper('canDo', function (module, action, options) {
+        const user = this.user || options.data?.root?.user;
+        if (!user) return options.inverse(this);
+        // Super Admin bypasses all
+        if (user.isSuperAdmin) return options.fn(this);
+        const dbModule = MODULE_MAP[module] || module;
+        const dbAction = ACTION_MAP[action] || action;
+        const hasPerm = user.permissions && user.permissions.some(
+            p => p.module === dbModule && p.action === dbAction
+        );
+        // Also check 'roles' module for admin operations
+        const hasRolesPerm = module === 'admin' && user.permissions && user.permissions.some(
+            p => p.module === 'roles' && p.action === dbAction
+        );
+        if (hasPerm || hasRolesPerm) return options.fn(this);
+        return options.inverse(this);
+    });
 }
 
 module.exports = { registerHelpers };

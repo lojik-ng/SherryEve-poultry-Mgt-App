@@ -75,6 +75,7 @@
     </div>
 
     <div class="form-actions mt-2">
-        <button type="submit" class="btn btn-primary btn-lg">💾 Save Settings</button>
+        {{#canDo 'settings' 'edit'}}<button type="submit" class="btn btn-primary btn-lg">💾 Save Settings</button>
+        {{else}}<p class="text-muted">You do not have permission to edit settings</p>{{/canDo}}
     </div>
 </form>

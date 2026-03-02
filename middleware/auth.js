@@ -61,11 +61,32 @@ function authenticate(req, res, next) {
 }
 
 // Check specific permission
+// Normalize route-level names to match production DB permission names
+const MODULE_MAP = {
+    'finance': 'finances',
+    'orders': 'egg_orders',
+    'admin': 'users',  // admin routes map to 'users' module in DB
+};
+
+const ACTION_MAP = {
+    'view': 'read',
+    'edit': 'update',
+};
+
 function authorize(module, action) {
     return (req, res, next) => {
         if (req.user.isSuperAdmin) return next();
-        const hasPermission = req.user.permissions.some(p => p.module === module && p.action === action);
-        if (!hasPermission) {
+
+        // Normalize module and action to match DB
+        const dbModule = MODULE_MAP[module] || module;
+        const dbAction = ACTION_MAP[action] || action;
+
+        // Check primary mapping
+        const hasPermission = req.user.permissions.some(p => p.module === dbModule && p.action === dbAction);
+        // Also check the 'roles' module for admin role operations
+        const hasRolesPermission = module === 'admin' && req.user.permissions.some(p => p.module === 'roles' && p.action === dbAction);
+
+        if (!hasPermission && !hasRolesPermission) {
             if (req.xhr || req.headers.accept?.includes('application/json')) {
                 return res.status(403).json({ error: 'Access denied' });
             }

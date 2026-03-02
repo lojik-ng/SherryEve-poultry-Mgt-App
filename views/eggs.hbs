@@ -4,9 +4,11 @@
         <p>Track egg collections, sales, and losses</p>
     </div>
     <div class="page-header-actions">
+        {{#canDo 'eggs' 'create'}}
         <button class="btn btn-success" data-modal="modalEggCollect">+ Collection</button>
         <button class="btn btn-primary" data-modal="modalEggSell">+ Sale</button>
         <button class="btn btn-danger" data-modal="modalEggLoss">+ Loss</button>
+        {{/canDo}}
     </div>
 </div>
 
@@ -80,6 +82,7 @@
 </div>
 
 <!-- Egg Collection Modal -->
+{{#canDo 'eggs' 'create'}}
 <div class="modal-overlay" id="modalEggCollect">
     <div class="modal">
         <div class="modal-header">
@@ -187,3 +190,4 @@
         </form>
     </div>
 </div>
+{{/canDo}}

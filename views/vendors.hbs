@@ -3,7 +3,8 @@
         <h2>🏪 Vendor Management</h2>
         <p>Manage your suppliers and purchase partners</p>
     </div>
-    <div class="page-header-actions"><button class="btn btn-primary" data-modal="modalAddVendor">+ Add Vendor</button>
+    <div class="page-header-actions">{{#canDo 'vendors' 'create'}}<button class="btn btn-primary"
+            data-modal="modalAddVendor">+ Add Vendor</button>{{/canDo}}
     </div>
 </div>
 
@@ -31,10 +32,12 @@
                         <td>{{#if this.address}}{{truncate this.address 30}}{{else}}—{{/if}}</td>
                         <td>{{formatDate this.created_at}}</td>
                         <td class="table-actions">
+                            {{#canDo 'vendors' 'delete'}}
                             <form action="/vendors/{{this.id}}/delete" method="POST" style="display:inline">
                                 <button type="submit" class="btn btn-ghost btn-sm text-danger"
                                     data-confirm="Delete this vendor?">🗑</button>
                             </form>
+                            {{/canDo}}
                         </td>
                     </tr>
                     {{/each}}
@@ -51,6 +54,7 @@
     </div>
 </div>
 
+{{#canDo 'vendors' 'create'}}
 <div class="modal-overlay" id="modalAddVendor">
     <div class="modal">
         <div class="modal-header">
@@ -77,3 +81,4 @@
         </form>
     </div>
 </div>
+{{/canDo}}
