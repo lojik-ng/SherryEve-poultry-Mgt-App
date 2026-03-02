@@ -1,0 +1,15 @@
+services:
+  sherry-eve:
+    build: .
+    container_name: sherry-eve
+    restart: unless-stopped
+    ports:
+      - "3015:3015"
+    volumes:
+      - ./data:/app/data
+      - ./backups:/app/backups
+    environment:
+      - NODE_ENV=production
+      - PORT=3015
+      - DB_PATH=/app/data/poultry.db3
+      - JWT_SECRET=${JWT_SECRET:64ab7571-dd22-4adb-80dd-b5d0b7a57d3f}

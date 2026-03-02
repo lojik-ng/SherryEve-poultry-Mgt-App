@@ -1,0 +1,154 @@
+<div class="page-header">
+    <div class="page-header-info">
+        <h2>📋 Stock Reconciliation</h2>
+        <p>Physical stock audit and adjustment</p>
+    </div>
+    <div class="page-header-actions"><button class="btn btn-primary" data-modal="modalReconcile">+ New
+            Reconciliation</button></div>
+</div>
+
+<!-- Current Stock Levels -->
+<div class="card mb-3">
+    <div class="card-header">
+        <h3>Current System Stock Levels</h3>
+    </div>
+    <div class="card-body">
+        <div class="stats-grid">
+            {{#each birdStock}}
+            <div class="stat-card stat-primary">
+                <div class="stat-icon">🐔</div>
+                <div class="stat-info-text">
+                    <div class="stat-label">{{this.type_name}}</div>
+                    <div class="stat-value">{{formatNumber this.quantity}}</div>
+                </div>
+            </div>
+            {{/each}}
+            <div class="stat-card stat-accent">
+                <div class="stat-icon">🥚</div>
+                <div class="stat-info-text">
+                    <div class="stat-label">Eggs</div>
+                    <div class="stat-value">{{formatNumber eggStock.quantity}}</div>
+                </div>
+            </div>
+            {{#each feedStock}}
+            <div class="stat-card stat-warning">
+                <div class="stat-icon">🌾</div>
+                <div class="stat-info-text">
+                    <div class="stat-label">{{this.type_name}}</div>
+                    <div class="stat-value">{{this.quantity}} bags</div>
+                </div>
+            </div>
+            {{/each}}
+        </div>
+    </div>
+</div>
+
+<!-- History -->
+<div class="card">
+    <div class="card-header">
+        <h3>Reconciliation History</h3>
+    </div>
+    <div class="card-body">
+        {{#if history.length}}
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Stock Type</th>
+                        <th>System Count</th>
+                        <th>Physical Count</th>
+                        <th>Adjustment</th>
+                        <th>Reason</th>
+                        <th>Reconciled By</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each history}}
+                    <tr>
+                        <td>{{formatDateTime this.reconciled_at}}</td>
+                        <td><span class="badge badge-info">{{capitalize this.stock_type}}</span></td>
+                        <td>{{formatNumber this.system_count}}</td>
+                        <td>{{formatNumber this.physical_count}}</td>
+                        <td class="{{#if (lt this.adjustment 0)}}text-danger{{else}}text-success{{/if}} font-bold">
+                            {{#if (gte this.adjustment 0)}}+{{/if}}{{this.adjustment}}
+                        </td>
+                        <td>{{this.reason}}</td>
+                        <td>{{this.reconciled_by_name}}</td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+        {{else}}
+        <div class="empty-state">
+            <div class="empty-icon">📋</div>
+            <h3>No Reconciliations</h3>
+            <p>Perform your first stock audit</p>
+        </div>
+        {{/if}}
+    </div>
+</div>
+
+<div class="modal-overlay" id="modalReconcile">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>Stock Reconciliation</h3><button class="modal-close">✕</button>
+        </div>
+        <form action="/reconciliation" method="POST" data-async>
+            <div class="modal-body">
+                <div class="form-group"><label>Stock Type <span class="required">*</span></label>
+                    <select class="form-control" name="stock_type" required id="reconcileStockType"
+                        onchange="toggleReconcileSubType()">
+                        <option value="bird">Bird</option>
+                        <option value="egg">Egg</option>
+                        <option value="feed">Feed</option>
+                    </select>
+                </div>
+                <div class="form-group" id="reconcileSubType">
+                    <label>Specific Type</label>
+                    <select class="form-control" name="stock_type_id" id="reconcileSubTypeSelect">
+                        {{#each birdStock}}<option value="{{this.bird_type_id}}" data-type="bird">{{this.type_name}}
+                            (Current: {{this.quantity}})</option>{{/each}}
+                        {{#each feedStock}}<option value="{{this.feed_type_id}}" data-type="feed">{{this.type_name}}
+                            (Current: {{this.quantity}} bags)</option>{{/each}}
+                    </select>
+                </div>
+                <div class="form-group"><label>Physical Count <span class="required">*</span></label><input
+                        type="number" class="form-control" name="physical_count" required min="0" step="0.1"></div>
+                <div class="form-group"><label>Reason <span class="required">*</span></label>
+                    <select class="form-control" name="reason" required>
+                        <option value="Physical count correction">Physical count correction</option>
+                        <option value="Theft detected">Theft detected</option>
+                        <option value="Data entry error">Data entry error</option>
+                        <option value="Unrecorded loss">Unrecorded loss</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>Notes</label><textarea class="form-control" name="notes"
+                        rows="2"></textarea></div>
+            </div>
+            <div class="modal-footer"><button type="button" class="btn btn-outline"
+                    data-dismiss="modal">Cancel</button><button type="submit" class="btn btn-primary">Submit
+                    Reconciliation</button></div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function toggleReconcileSubType() {
+        const type = document.getElementById('reconcileStockType').value;
+        const subTypeDiv = document.getElementById('reconcileSubType');
+        const options = document.querySelectorAll('#reconcileSubTypeSelect option');
+        if (type === 'egg') {
+            subTypeDiv.style.display = 'none';
+        } else {
+            subTypeDiv.style.display = 'block';
+            options.forEach(opt => {
+                opt.style.display = opt.dataset.type === type ? '' : 'none';
+                if (opt.dataset.type === type) opt.selected = true;
+            });
+        }
+    }
+    document.addEventListener('DOMContentLoaded', toggleReconcileSubType);
+</script>

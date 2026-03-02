@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="{{farmName}} - Farm Management System">
+  <title>{{title}} - {{farmName}}</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div class="app-layout">
+    {{> sidebar}}
+    <div class="main-content">
+      {{> topbar}}
+      <div class="page-content">
+        {{#if successMessage}}
+        <div class="alert alert-success">✓ {{successMessage}}</div>
+        {{/if}}
+        {{#if errorMessage}}
+        <div class="alert alert-danger">✕ {{errorMessage}}</div>
+        {{/if}}
+        {{{body}}}
+      </div>
+    </div>
+  </div>
+  <div class="toast-container" id="toastContainer"></div>
+  <script src="/js/app.js"></script>
+</body>
+
+</html>

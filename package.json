@@ -1,0 +1,19 @@
+{
+    "name": "sherry-eve",
+    "version": "1.0.0",
+    "description": "SherryEve Farm Management System - Complete Farm ERP",
+    "main": "server.js",
+    "scripts": {
+        "start": "node server.js",
+        "dev": "node server.js"
+    },
+    "dependencies": {
+        "bcrypt": "^5.1.1",
+        "better-sqlite3": "^11.7.0",
+        "cookie-parser": "^1.4.7",
+        "express": "^4.21.1",
+        "hbs": "^4.2.0",
+        "jsonwebtoken": "^9.0.2",
+        "nodemailer": "^6.9.16"
+    }
+}

@@ -1,0 +1,59 @@
+<div class="page-header">
+    <div class="page-header-info">
+        <h2>💾 Backup & Restore</h2>
+        <p>Database backup management</p>
+    </div>
+    <div class="page-header-actions">
+        <form action="/backup/create" method="POST" style="display:inline">
+            <button type="submit" class="btn btn-primary" data-confirm="Create a new backup now?">💾 Create Backup
+                Now</button>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3>Backup History</h3>
+    </div>
+    <div class="card-body">
+        {{#if logs.length}}
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Filename</th>
+                        <th>Size</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each logs}}
+                    <tr>
+                        <td>{{formatDateTime this.created_at}}</td>
+                        <td><code>{{this.filename}}</code></td>
+                        <td>{{#if this.size_bytes}}{{math (math this.size_bytes '/' 1024) '/' 1}} KB{{else}}—{{/if}}
+                        </td>
+                        <td>{{#if (eq this.status 'success')}}<span
+                                class="badge badge-success">Success</span>{{else}}<span
+                                class="badge badge-danger">Failed</span>{{/if}}</td>
+                        <td>
+                            {{#if (eq this.status 'success')}}
+                            <a href="/backup/download/{{this.filename}}" class="btn btn-outline btn-sm">📥 Download</a>
+                            {{/if}}
+                        </td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+        {{else}}
+        <div class="empty-state">
+            <div class="empty-icon">💾</div>
+            <h3>No Backups</h3>
+            <p>Create your first backup</p>
+        </div>
+        {{/if}}
+    </div>
+</div>

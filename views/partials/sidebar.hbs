@@ -1,0 +1,81 @@
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <span class="logo-icon">🐔</span>
+        <h2>{{farmName}}</h2>
+    </div>
+
+    <nav class="sidebar-nav">
+        <div class="nav-section">
+            <div class="nav-section-title">Overview</div>
+            <a href="/dashboard" class="nav-item {{activeNav activeNav 'dashboard'}}">
+                <span class="nav-icon">📊</span> Dashboard
+            </a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">Inventory</div>
+            <a href="/birds" class="nav-item {{activeNav activeNav 'birds'}}">
+                <span class="nav-icon">🐔</span> Birds
+            </a>
+            <a href="/eggs" class="nav-item {{activeNav activeNav 'eggs'}}">
+                <span class="nav-icon">🥚</span> Eggs
+            </a>
+            <a href="/feed" class="nav-item {{activeNav activeNav 'feed'}}">
+                <span class="nav-icon">🌾</span> Feed
+            </a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">Business</div>
+            <a href="/orders" class="nav-item {{activeNav activeNav 'orders'}}">
+                <span class="nav-icon">📦</span> Egg Orders
+                {{#if pendingOrders}}<span class="nav-badge">{{pendingOrders}}</span>{{/if}}
+            </a>
+            <a href="/finance" class="nav-item {{activeNav activeNav 'finance'}}">
+                <span class="nav-icon">💰</span> Finance
+            </a>
+            <a href="/vendors" class="nav-item {{activeNav activeNav 'vendors'}}">
+                <span class="nav-icon">🏪</span> Vendors
+            </a>
+            <a href="/customers" class="nav-item {{activeNav activeNav 'customers'}}">
+                <span class="nav-icon">🛒</span> Customers
+            </a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">Operations</div>
+            <a href="/notes" class="nav-item {{activeNav activeNav 'notes'}}">
+                <span class="nav-icon">📝</span> Farm Journal
+            </a>
+            <a href="/reconciliation" class="nav-item {{activeNav activeNav 'reconciliation'}}">
+                <span class="nav-icon">📋</span> Reconciliation
+            </a>
+            <a href="/reports" class="nav-item {{activeNav activeNav 'reports'}}">
+                <span class="nav-icon">📈</span> Reports
+            </a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">Administration</div>
+            <a href="/admin" class="nav-item {{activeNav activeNav 'admin'}}">
+                <span class="nav-icon">👥</span> Users & Roles
+            </a>
+            <a href="/settings" class="nav-item {{activeNav activeNav 'settings'}}">
+                <span class="nav-icon">⚙️</span> Settings
+            </a>
+            <a href="/backup" class="nav-item {{activeNav activeNav 'backup'}}">
+                <span class="nav-icon">💾</span> Backup
+            </a>
+        </div>
+    </nav>
+
+    <div class="sidebar-footer">
+        <div class="sidebar-user">
+            <div class="user-avatar">{{firstChar user.name}}</div>
+            <div class="user-info">
+                <div class="user-name">{{user.name}}</div>
+                <div class="user-role">{{user.roles.[0]}}</div>
+            </div>
+        </div>
+    </div>
+</aside>

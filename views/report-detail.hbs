@@ -1,0 +1,224 @@
+<div class="page-header">
+    <div class="page-header-info">
+        <h2>{{reportTitle}}</h2>
+        <p>Date range: {{formatDate dateFrom}} — {{formatDate dateTo}}</p>
+    </div>
+    <div class="page-header-actions">
+        <a href="/reports" class="btn btn-outline">← Back to Reports</a>
+        {{#if (neq reportType 'bird-stock')}}
+        <a href="/reports/{{reportType}}/export?from={{dateFrom}}&to={{dateTo}}" class="btn btn-success">📥 Export
+            CSV</a>
+        {{/if}}
+        <button onclick="window.print()" class="btn btn-outline">🖨 Print</button>
+    </div>
+</div>
+
+<!-- Date Filter -->
+{{#if (neq reportType 'bird-stock')}}
+<div class="filters-bar">
+    <form action="/reports/{{reportType}}" method="GET" class="flex items-center gap-1">
+        <div class="form-group"><label>From</label><input type="date" class="form-control" name="from"
+                value="{{dateFrom}}"></div>
+        <div class="form-group"><label>To</label><input type="date" class="form-control" name="to" value="{{dateTo}}">
+        </div>
+        <div class="form-group"><label>&nbsp;</label><button type="submit" class="btn btn-primary">Filter</button></div>
+    </form>
+</div>
+{{/if}}
+
+<div class="card">
+    <div class="card-body">
+        {{#if (eq reportType 'bird-stock')}}
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Bird Type</th>
+                        <th>Current Stock</th>
+                        <th>Low Stock Threshold</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each reportData}}
+                    <tr>
+                        <td><strong>{{this.name}}</strong></td>
+                        <td>{{formatNumber this.quantity}}</td>
+                        <td>{{this.low_stock_threshold}}</td>
+                        <td>{{#if (lte this.quantity this.low_stock_threshold)}}<span
+                                class="badge badge-danger">Low</span>{{else}}<span
+                                class="badge badge-success">OK</span>{{/if}}</td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+        {{/if}}
+
+        {{#if (eq reportType 'bird-transactions')}}
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Type</th>
+                        <th>Bird Type</th>
+                        <th>Qty</th>
+                        <th>Unit Price</th>
+                        <th>Total</th>
+                        <th>Vendor/Customer</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each reportData}}
+                    <tr>
+                        <td>{{formatDate this.transaction_date}}</td>
+                        <td>{{{statusBadge this.transaction_type}}}</td>
+                        <td>{{this.type_name}}</td>
+                        <td>{{this.quantity}}</td>
+                        <td>{{#if this.unit_price}}{{formatCurrency this.unit_price}}{{else}}—{{/if}}</td>
+                        <td>{{#if this.total_amount}}{{formatCurrency this.total_amount}}{{else}}—{{/if}}</td>
+                        <td>{{this.vendor_name}}{{this.customer_name}}</td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+        {{/if}}
+
+        {{#if (eq reportType 'egg-production')}}
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Collected</th>
+                        <th>Sold</th>
+                        <th>Lost</th>
+                        <th>Net</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each reportData}}
+                    <tr>
+                        <td>{{formatDate this.transaction_date}}</td>
+                        <td class="text-success font-bold">{{formatNumber this.collected}}</td>
+                        <td class="text-primary font-bold">{{formatNumber this.sold}}</td>
+                        <td class="text-danger font-bold">{{formatNumber this.lost}}</td>
+                        <td class="font-bold">{{formatNumber (subtract (subtract this.collected this.sold) this.lost)}}
+                        </td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+        {{/if}}
+
+        {{#if (eq reportType 'feed-consumption')}}
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Feed Type</th>
+                        <th>Transaction</th>
+                        <th>Qty (Bags)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each reportData}}
+                    <tr>
+                        <td>{{formatDate this.transaction_date}}</td>
+                        <td>{{this.type_name}}</td>
+                        <td>{{{statusBadge this.transaction_type}}}</td>
+                        <td>{{this.quantity}}</td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+        {{/if}}
+
+        {{#if (eq reportType 'mortality')}}
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Bird Type</th>
+                        <th>Quantity</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each reportData}}
+                    <tr>
+                        <td>{{formatDate this.transaction_date}}</td>
+                        <td>{{this.type_name}}</td>
+                        <td class="text-danger font-bold">{{this.quantity}}</td>
+                        <td>{{this.notes}}</td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+        {{/if}}
+
+        {{#if (eq reportType 'profit-loss')}}
+        <div class="grid-2">
+            <div>
+                <h3 class="mb-2 text-success">💰 Income — {{formatCurrency reportData.totalIncome}}</h3>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{#each reportData.incomeData}}
+                            <tr>
+                                <td>{{this.category}}</td>
+                                <td class="text-success font-bold">{{formatCurrency this.total}}</td>
+                            </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div>
+                <h3 class="mb-2 text-danger">💸 Expenses — {{formatCurrency reportData.totalExpense}}</h3>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{#each reportData.expenseData}}
+                            <tr>
+                                <td>{{this.category}}</td>
+                                <td class="text-danger font-bold">{{formatCurrency this.total}}</td>
+                            </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="card mt-3"
+            style="background: {{#if (gte reportData.netProfit 0)}}var(--success-light){{else}}var(--danger-light){{/if}}; border: none;">
+            <div class="card-body text-center">
+                <div class="stat-label">Net {{#if (gte reportData.netProfit 0)}}Profit{{else}}Loss{{/if}}</div>
+                <div class="stat-value"
+                    style="font-size: 2rem; color: {{#if (gte reportData.netProfit 0)}}var(--success){{else}}var(--danger){{/if}};">
+                    {{formatCurrency reportData.netProfit}}
+                </div>
+            </div>
+        </div>
+        {{/if}}
+    </div>
+</div>

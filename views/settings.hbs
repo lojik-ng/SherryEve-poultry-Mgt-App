@@ -1,0 +1,80 @@
+<div class="page-header">
+    <div class="page-header-info">
+        <h2>⚙️ System Settings</h2>
+        <p>Configure farm details, email, and preferences</p>
+    </div>
+</div>
+
+<form action="/settings" method="POST">
+    <div class="grid-2">
+        <!-- Farm Details -->
+        <div class="card">
+            <div class="card-header">
+                <h3>🏠 Farm Details</h3>
+            </div>
+            <div class="card-body">
+                <div class="form-group"><label>Farm Name</label><input type="text" class="form-control" name="farm_name"
+                        value="{{formSettings.farm_name}}"></div>
+                <div class="form-row">
+                    <div class="form-group"><label>Currency Symbol</label><input type="text" class="form-control"
+                            name="currency" value="{{formSettings.currency}}"></div>
+                    <div class="form-group"><label>Currency Code</label><input type="text" class="form-control"
+                            name="currency_code" value="{{formSettings.currency_code}}"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Email Settings -->
+        <div class="card">
+            <div class="card-header">
+                <h3>📧 Email Settings (SMTP)</h3>
+            </div>
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group"><label>SMTP Host</label><input type="text" class="form-control"
+                            name="smtp_host" value="{{formSettings.smtp_host}}" placeholder="smtp.gmail.com"></div>
+                    <div class="form-group"><label>SMTP Port</label><input type="text" class="form-control"
+                            name="smtp_port" value="{{formSettings.smtp_port}}"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>SMTP User</label><input type="text" class="form-control"
+                            name="smtp_user" value="{{formSettings.smtp_user}}"></div>
+                    <div class="form-group"><label>SMTP Password</label><input type="password" class="form-control"
+                            name="smtp_pass" value="{{formSettings.smtp_pass}}"></div>
+                </div>
+                <div class="form-group"><label>From Address</label><input type="email" class="form-control"
+                        name="smtp_from" value="{{formSettings.smtp_from}}"></div>
+                <div class="form-group"><label>Report Recipient Email</label><input type="email" class="form-control"
+                        name="report_email" value="{{formSettings.report_email}}"></div>
+                <div class="form-group"><label>Daily Report Time</label><input type="time" class="form-control"
+                        name="daily_report_time" value="{{formSettings.daily_report_time}}"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mt-2">
+        <div class="card-header">
+            <h3>💾 Backup Settings</h3>
+        </div>
+        <div class="card-body">
+            <div class="form-row">
+                <div class="form-group"><label>Auto Backup</label>
+                    <select class="form-control" name="auto_backup">
+                        <option value="0" {{selected formSettings.auto_backup '0' }}>Disabled</option>
+                        <option value="1" {{selected formSettings.auto_backup '1' }}>Enabled</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>Backup Interval</label>
+                    <select class="form-control" name="backup_interval">
+                        <option value="daily" {{selected formSettings.backup_interval 'daily' }}>Daily</option>
+                        <option value="weekly" {{selected formSettings.backup_interval 'weekly' }}>Weekly</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-actions mt-2">
+        <button type="submit" class="btn btn-primary btn-lg">💾 Save Settings</button>
+    </div>
+</form>
