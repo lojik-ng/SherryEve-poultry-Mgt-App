@@ -36,10 +36,11 @@
                         <td class="table-actions">
                             {{#if (eq this.status 'pending')}}
                             {{#canDo 'orders' 'edit'}}
-                            <form action="/orders/{{this.id}}/fulfill" method="POST" style="display:inline">
-                                <button type="submit" class="btn btn-success btn-sm"
-                                    data-confirm="Fulfill this order? Stock will be deducted.">✓ Fulfill</button>
-                            </form>
+                            <button type="button" class="btn btn-success btn-sm"
+                                data-modal="modalFulfillOrder"
+                                data-order-id="{{this.id}}"
+                                data-quantity="{{this.quantity}}"
+                                data-customer="{{this.customer_name}}">✓ Fulfill</button>
                             <form action="/orders/{{this.id}}/cancel" method="POST" style="display:inline">
                                 <button type="submit" class="btn btn-ghost btn-sm text-danger"
                                     data-confirm="Cancel this order?">✕ Cancel</button>
@@ -61,6 +62,62 @@
         {{/if}}
     </div>
 </div>
+
+<!-- Fulfill Order Modal -->
+<div class="modal-overlay" id="modalFulfillOrder">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>Fulfill Order</h3><button class="modal-close">✕</button>
+        </div>
+        <form id="fulfillForm" action="/orders/0/fulfill" method="POST" data-async>
+            <div class="modal-body">
+                <p id="fulfillOrderInfo">Order # — eggs</p>
+                <input type="hidden" name="order_id" id="fulfillOrderId">
+                <div class="form-group"><label>Unit Price (per egg) <span class="required">*</span></label>
+                    <input type="number" step="0.01" min="0" class="form-control" name="unit_price" id="fulfillUnitPrice" required placeholder="0.00">
+                </div>
+                <div class="form-group"><label>Total Amount</label>
+                    <input type="text" class="form-control" id="fulfillTotalDisplay" readonly>
+                </div>
+            </div>
+            <div class="modal-footer"><button type="button" class="btn btn-outline" data-dismiss="modal">Cancel</button><button type="submit" class="btn btn-success">✓ Fulfill Order</button></div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const fulfillModal = document.getElementById('modalFulfillOrder');
+    const fulfillForm = document.getElementById('fulfillForm');
+    const fulfillOrderInfo = document.getElementById('fulfillOrderInfo');
+    const fulfillOrderId = document.getElementById('fulfillOrderId');
+    const fulfillUnitPrice = document.getElementById('fulfillUnitPrice');
+    const fulfillTotalDisplay = document.getElementById('fulfillTotalDisplay');
+    let currentQuantity = 0;
+
+    // When fulfill button is clicked, populate modal with order data
+    document.querySelectorAll('[data-modal="modalFulfillOrder"]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const orderId = btn.getAttribute('data-order-id');
+            const quantity = btn.getAttribute('data-quantity');
+            const customer = btn.getAttribute('data-customer') || '';
+            currentQuantity = parseInt(quantity) || 0;
+
+            fulfillForm.action = '/orders/' + orderId + '/fulfill';
+            fulfillOrderId.value = orderId;
+            fulfillOrderInfo.textContent = 'Order #' + orderId + ' — ' + currentQuantity + ' eggs' + (customer ? ' for ' + customer : '');
+            fulfillUnitPrice.value = '';
+            fulfillTotalDisplay.value = '';
+        });
+    });
+
+    // Auto-calculate total when price is entered
+    fulfillUnitPrice.addEventListener('input', () => {
+        const price = parseFloat(fulfillUnitPrice.value) || 0;
+        fulfillTotalDisplay.value = (currentQuantity * price).toFixed(2);
+    });
+});
+</script>
 
 {{#canDo 'orders' 'create'}}
 <div class="modal-overlay" id="modalCreateOrder">

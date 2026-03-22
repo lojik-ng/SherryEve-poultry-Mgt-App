@@ -35,8 +35,21 @@ router.post('/', authorize('orders', 'create'), (req, res) => {
 router.post('/:id/fulfill', authorize('orders', 'edit'), (req, res) => {
     const db = getDb();
     try {
+        const { unit_price } = req.body;
+
+        // Validate unit_price is provided and is a valid positive number
+        if (unit_price === undefined || unit_price === null || unit_price === '') {
+            throw new Error('Unit price is required to fulfill an order');
+        }
+        const unitPrice = parseFloat(unit_price);
+        if (isNaN(unitPrice) || unitPrice < 0) {
+            throw new Error('Unit price must be a valid positive number');
+        }
+
         const order = db.prepare('SELECT * FROM egg_orders WHERE id = ?').get(req.params.id);
         if (!order || order.status !== 'pending') throw new Error('Order not found or already processed');
+
+        const totalAmount = order.quantity * unitPrice;
 
         const txn = db.transaction(() => {
             const stock = db.prepare('SELECT quantity FROM egg_stock WHERE id = 1').get();
@@ -44,9 +57,14 @@ router.post('/:id/fulfill', authorize('orders', 'edit'), (req, res) => {
 
             // Deduct stock
             db.prepare('UPDATE egg_stock SET quantity = quantity - ?, updated_at = CURRENT_TIMESTAMP WHERE id = 1').run(order.quantity);
-            // Create egg transaction
-            const result = db.prepare(`INSERT INTO egg_transactions (transaction_type, quantity, customer_id, notes, transaction_date, created_by) VALUES ('sale', ?, ?, ?, ?, ?)`)
-                .run(order.quantity, order.customer_id, `Order #${order.id} fulfilled`, new Date().toISOString().split('T')[0], req.user.id);
+            // Create egg transaction with price info
+            db.prepare(`INSERT INTO egg_transactions (transaction_type, quantity, unit_price, total_amount, customer_id, notes, transaction_date, created_by) VALUES ('sale', ?, ?, ?, ?, ?, ?, ?)`)
+                .run(order.quantity, unitPrice, totalAmount, order.customer_id, `Order #${order.id} fulfilled`, new Date().toISOString().split('T')[0], req.user.id);
+            // Create income record
+            if (totalAmount > 0) {
+                db.prepare(`INSERT INTO incomes (category, amount, description, reference_type, reference_id, income_date, created_by) VALUES ('Egg Sales', ?, ?, 'egg_order', ?, ?, ?)`)
+                    .run(totalAmount, `Sale of ${order.quantity} eggs (Order #${order.id})`, order.id, new Date().toISOString().split('T')[0], req.user.id);
+            }
             // Mark fulfilled
             db.prepare('UPDATE egg_orders SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?').run('fulfilled', order.id);
         });

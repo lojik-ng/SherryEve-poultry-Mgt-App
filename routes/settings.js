@@ -13,7 +13,7 @@ router.get('/', authorize('settings', 'view'), (req, res) => {
 
 router.post('/', authorize('settings', 'edit'), (req, res) => {
     const db = getDb();
-    const keys = ['farm_name', 'currency', 'currency_code', 'smtp_host', 'smtp_port', 'smtp_user', 'smtp_pass', 'smtp_from', 'report_email', 'daily_report_time', 'auto_backup', 'backup_interval'];
+    const keys = ['farm_name', 'currency', 'currency_code', 'egg_price', 'smtp_host', 'smtp_port', 'smtp_user', 'smtp_pass', 'smtp_from', 'report_email', 'daily_report_time', 'auto_backup', 'backup_interval'];
 
     const upsert = db.prepare(`INSERT INTO system_settings (key, value) VALUES (?, ?)
     ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = CURRENT_TIMESTAMP`);
