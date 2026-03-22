@@ -1,0 +1,183 @@
+<div class="page-header">
+    <div class="page-header-info">
+        <h2>📅 Monthly Financial Report</h2>
+        <p>{{monthDisplay}}</p>
+    </div>
+    <div class="page-header-actions">
+        <a href="/reports" class="btn btn-outline">← Back to Reports</a>
+        <button onclick="window.print()" class="btn btn-outline">🖨 Print</button>
+    </div>
+</div>
+
+<!-- Month Selector -->
+<div class="filters-bar">
+    <form action="/reports/monthly" method="GET" class="flex items-center gap-1">
+        <div class="form-group">
+            <label>Select Month</label>
+            <select name="month" class="form-control" onchange="this.form.submit()">
+                <option value="">— Select Month —</option>
+                {{#each availableMonths}}
+                <option value="{{this.month}}" {{#if (eq this.month ../selectedMonth)}}selected{{/if}}>{{this.monthLabel}}</option>
+                {{/each}}
+            </select>
+        </div>
+    </form>
+    <form action="/reports/monthly" method="GET" class="flex items-center gap-1">
+        <div class="form-group">
+            <label>Jump to Month</label>
+            <input type="month" name="month" class="form-control" value="{{selectedMonth}}">
+        </div>
+        <div class="form-group">
+            <label>&nbsp;</label>
+            <button type="submit" class="btn btn-primary">Go</button>
+        </div>
+    </form>
+</div>
+
+<!-- Summary Cards -->
+<div class="grid-3 mb-3">
+    <div class="card">
+        <div class="card-body text-center">
+            <div class="stat-label">Total Income</div>
+            <div class="stat-value text-success" style="font-size: 1.8rem;">{{formatCurrency totalIncome}}</div>
+            <p class="text-secondary mt-1">{{incomeByCategory.length}} categories</p>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body text-center">
+            <div class="stat-label">Total Expenses</div>
+            <div class="stat-value text-danger" style="font-size: 1.8rem;">{{formatCurrency totalExpense}}</div>
+            <p class="text-secondary mt-1">{{expenseByCategory.length}} categories</p>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body text-center">
+            <div class="stat-label">Net {{#if (gte netProfit 0)}}Profit{{else}}Loss{{/if}}</div>
+            <div class="stat-value" style="font-size: 1.8rem; color: {{#if (gte netProfit 0)}}var(--success){{else}}var(--danger){{/if}};">
+                {{formatCurrency netProfit}}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Income vs Expense Comparison -->
+<div class="grid-2 mb-3">
+    <div class="card">
+        <div class="card-header">
+            <h3>💰 Income Breakdown</h3>
+        </div>
+        <div class="card-body">
+            {{#if incomeByCategory.length}}
+            <div class="mb-2">
+                {{#each incomeByCategory}}
+                <div class="flex justify-between items-center py-1" style="border-bottom: 1px solid var(--border);">
+                    <span>{{this.category}}</span>
+                    <span class="text-success font-bold">{{formatCurrency this.total}}</span>
+                </div>
+                {{/each}}
+            </div>
+            {{else}}
+            <p class="text-secondary text-center">No income recorded</p>
+            {{/if}}
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <h3>💸 Expense Breakdown</h3>
+        </div>
+        <div class="card-body">
+            {{#if expenseByCategory.length}}
+            <div class="mb-2">
+                {{#each expenseByCategory}}
+                <div class="flex justify-between items-center py-1" style="border-bottom: 1px solid var(--border);">
+                    <span>{{this.category}}</span>
+                    <span class="text-danger font-bold">{{formatCurrency this.total}}</span>
+                </div>
+                {{/each}}
+            </div>
+            {{else}}
+            <p class="text-secondary text-center">No expenses recorded</p>
+            {{/if}}
+        </div>
+    </div>
+</div>
+
+<!-- Tabs for Details -->
+<div class="tabs">
+    <div class="tab active" data-tab="tab-income">Income Details</div>
+    <div class="tab" data-tab="tab-expense">Expense Details</div>
+</div>
+
+<div id="tab-income" class="tab-content">
+    <div class="card">
+        {{#if incomeTransactions.length}}
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Category</th>
+                        <th>Description</th>
+                        <th class="text-right">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each incomeTransactions}}
+                    <tr>
+                        <td>{{formatDate this.income_date}}</td>
+                        <td>{{{statusBadge this.category}}}</td>
+                        <td>{{this.description}}</td>
+                        <td class="text-success font-bold text-right">{{formatCurrency this.amount}}</td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+                <tfoot>
+                    <tr style="font-weight: bold; background: var(--light);">
+                        <td colspan="3" class="text-right">Total</td>
+                        <td class="text-success text-right">{{formatCurrency totalIncome}}</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        {{else}}
+        <p class="text-secondary text-center p-3">No income transactions for this month</p>
+        {{/if}}
+    </div>
+</div>
+
+<div id="tab-expense" class="tab-content" style="display: none;">
+    <div class="card">
+        {{#if expenseTransactions.length}}
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Category</th>
+                        <th>Description</th>
+                        <th class="text-right">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each expenseTransactions}}
+                    <tr>
+                        <td>{{formatDate this.expense_date}}</td>
+                        <td>{{{statusBadge this.category}}}</td>
+                        <td>{{this.description}}</td>
+                        <td class="text-danger font-bold text-right">{{formatCurrency this.amount}}</td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+                <tfoot>
+                    <tr style="font-weight: bold; background: var(--light);">
+                        <td colspan="3" class="text-right">Total</td>
+                        <td class="text-danger text-right">{{formatCurrency totalExpense}}</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        {{else}}
+        <p class="text-secondary text-center p-3">No expense transactions for this month</p>
+        {{/if}}
+    </div>
+</div>

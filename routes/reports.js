@@ -7,6 +7,86 @@ router.get('/', authorize('reports', 'view'), (req, res) => {
     res.render('reports', { title: 'Reports', activeNav: 'reports' });
 });
 
+// Monthly Financial Report
+router.get('/monthly', authorize('reports', 'view'), (req, res) => {
+    const db = getDb();
+    const { month } = req.query; // YYYY-MM format
+
+    // Default to current month if not specified
+    const selectedMonth = month || new Date().toISOString().slice(0, 7);
+
+    // Build date range for the selected month
+    const dateFrom = `${selectedMonth}-01`;
+    const lastDay = new Date(parseInt(selectedMonth.slice(0, 4)), parseInt(selectedMonth.slice(5, 7)), 0).getDate();
+    const dateTo = `${selectedMonth}-${String(lastDay).padStart(2, '0')}`;
+
+    // Income breakdown by category
+    const incomeByCategory = db.prepare(`
+        SELECT category, SUM(amount) as total, COUNT(*) as count
+        FROM incomes
+        WHERE income_date BETWEEN ? AND ?
+        GROUP BY category
+        ORDER BY total DESC
+    `).all(dateFrom, dateTo);
+
+    // Expense breakdown by category
+    const expenseByCategory = db.prepare(`
+        SELECT category, SUM(amount) as total, COUNT(*) as count
+        FROM expenses
+        WHERE expense_date BETWEEN ? AND ?
+        GROUP BY category
+        ORDER BY total DESC
+    `).all(dateFrom, dateTo);
+
+    // Income transactions detail
+    const incomeTransactions = db.prepare(`
+        SELECT * FROM incomes
+        WHERE income_date BETWEEN ? AND ?
+        ORDER BY income_date DESC
+    `).all(dateFrom, dateTo);
+
+    // Expense transactions detail
+    const expenseTransactions = db.prepare(`
+        SELECT * FROM expenses
+        WHERE expense_date BETWEEN ? AND ?
+        ORDER BY expense_date DESC
+    `).all(dateFrom, dateTo);
+
+    // Totals
+    const totalIncome = incomeByCategory.reduce((s, i) => s + i.total, 0);
+    const totalExpense = expenseByCategory.reduce((s, e) => s + e.total, 0);
+    const netProfit = totalIncome - totalExpense;
+
+    // Available months (months that have transactions)
+    const availableMonths = db.prepare(`
+        SELECT DISTINCT strftime('%Y-%m', income_date) as month FROM incomes
+        UNION
+        SELECT DISTINCT strftime('%Y-%m', expense_date) as month FROM expenses
+        ORDER BY month DESC
+    `).all().map((row: { month: string }) => ({
+        month: row.month,
+        monthLabel: new Date(row.month + '-01').toLocaleDateString('en-US', { year: 'numeric', month: 'long' })
+    }));
+
+    // Format month for display
+    const monthDisplay = new Date(selectedMonth + '-01').toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+
+    res.render('report-monthly', {
+        title: 'Monthly Financial Report',
+        activeNav: 'reports',
+        selectedMonth,
+        monthDisplay,
+        incomeByCategory,
+        expenseByCategory,
+        incomeTransactions,
+        expenseTransactions,
+        totalIncome,
+        totalExpense,
+        netProfit,
+        availableMonths,
+    });
+});
+
 // Generate specific report
 router.get('/:type', authorize('reports', 'view'), (req, res) => {
     const db = getDb();
