@@ -63,7 +63,7 @@ router.get('/monthly', authorize('reports', 'view'), (req, res) => {
         UNION
         SELECT DISTINCT strftime('%Y-%m', expense_date) as month FROM expenses
         ORDER BY month DESC
-    `).all().map((row: { month: string }) => ({
+    `).all().map(row => ({
         month: row.month,
         monthLabel: new Date(row.month + '-01').toLocaleDateString('en-US', { year: 'numeric', month: 'long' })
     }));
